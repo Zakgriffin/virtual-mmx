@@ -1,11 +1,10 @@
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { SpringPhysics } from "../../helpers/springPhysics";
 
 export const Snare = () => {
 	const app = useContext(AppContext);
 
-	const pulse = new SpringPulse();
+	const pulse = new SpringPhysics();
 	const snareTimelines = app.jointTimelines.drums.snare;
 
 	snareTimelines.addJointEventListener(animateHit);

@@ -1,6 +1,5 @@
-import { Signal, memo } from "../core/helpers/solid";
+import { Signal } from "../helpers/solid";
 import { ScrollContainerStore } from "./scrollContainerStore";
-import { createMemo, createEffect } from "solid-js";
 
 interface ScrollProps {
 	scroll: ScrollContainerStore;
@@ -37,7 +36,7 @@ export const TranslateOnScroll = (props: ScrollByProps) => {
 	const axis = props.scroll[props.axis];
 
 	return (
-		<g transform={translateBy(props.by() * axis.pixelsPerUnit())}>
+		<g transform={translateBy(props.by.v * axis.pixelsPerUnit())}>
 			{props.children}
 		</g>
 	);

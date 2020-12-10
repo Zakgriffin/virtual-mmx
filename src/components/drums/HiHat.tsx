@@ -1,20 +1,22 @@
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { HiHatDropE } from "../../eventHandling/concrete";
+import { SpringPhysics } from "../../helpers/springPhysics";
 
 export const HiHat = () => {
 	const app = useContext(AppContext);
 
-	const pulse = new SpringPulse();
-	const hihatTimelines = app.jointTimelines.drums.hihat;
+	const pulse = new SpringPhysics();
+	const hihatTimelines =
+		app.eventReactionHandler.dropEventObservers.drums.hihat;
 
-	hihatTimelines.addJointEventListener(animateHit);
+	hihatTimelines.addEventListener(animateHit);
 
 	pulse.damping = 20;
 	pulse.stiffness = 300;
 
 	function handlePress() {
-		hihatTimelines.performance.triggerEvent();
+		hihatTimelines.triggerEvent(new HiHatDropE({ tick: -1 }));
 		animateHit();
 	}
 

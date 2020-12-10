@@ -3,13 +3,13 @@ import { Vibraphone } from "./vibraphone/Vibraphone";
 import { Drums } from "./drums/Drums";
 import { HiHatMachine } from "./hiHatMachine/HiHatMachine";
 import { Bass } from "./bass/Bass";
-import { AppStore, AppContext } from "../stores/app";
 import { ProgrammingWheel } from "./programmingWheel/ProgrammingWheel";
 import { Crank } from "./crank/Crank";
 import { MutingLevers } from "./mutingLevers/MutingLevers";
 // import { PerformanceEditor } from "./performanceEditor/PerformanceEditor";
 import { VmmxHeader } from "./VmmxHeader/VmmxHeader";
 import { PerformanceEditor } from "./performanceEditor/PerformanceEditor";
+import { AppContext, AppStore } from "../app";
 
 export const App = () => {
 	const app = new AppStore();

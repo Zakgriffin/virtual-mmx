@@ -1,5 +1,5 @@
+import { s } from "../../helpers/solid";
 import { PerformanceAction } from "./other";
-import { signal } from "../../core/helpers/solid";
 
 export class PerformanceEditorStore {
 	performanceActions: PerformanceAction[] = [
@@ -8,23 +8,21 @@ export class PerformanceEditorStore {
 		"Hihat Opening",
 	];
 
-	selectedAction = signal<PerformanceAction | undefined>(
-		this.performanceActions[1]
-	);
+	selectedAction = s<PerformanceAction | undefined>(this.performanceActions[1]);
 
 	setAction(action: PerformanceAction) {
-		this.selectedAction(action);
+		this.selectedAction.set(action);
 	}
 
-	open = signal(false);
+	open = s(false);
 
 	show = () => {
-		this.open(true);
+		this.open.set(true);
 	};
 	hide() {
-		this.open(false);
+		this.open.set(false);
 	}
 	toggleShow() {
-		this.open() ? this.hide() : this.show();
+		this.open.v ? this.hide() : this.show();
 	}
 }

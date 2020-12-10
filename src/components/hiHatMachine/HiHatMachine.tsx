@@ -1,9 +1,8 @@
-import { signal } from "../../core/helpers/solid";
-
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { HiHatMachineMode } from "../../toFutureSchema";
 import { ModeSelector } from "./ModeSelector";
 import { HiHatMachineBrass } from "./HiHatMachineBrass";
+import { SpringPhysics } from "../../helpers/springPhysics";
+import { s } from "../../helpers/solid";
 
 const hatRotation: Record<HiHatMachineMode, number> = {
 	beat: -30,
@@ -18,15 +17,15 @@ const hatRotation: Record<HiHatMachineMode, number> = {
 
 export const HiHatMachine = () => {
 	// Will move to store
-	const currentMode = signal<HiHatMachineMode>("beat");
-	const rotationSpring = new SpringPulse();
+	const currentMode = s<HiHatMachineMode>("beat");
+	const rotationSpring = new SpringPhysics();
 
 	rotationSpring.stiffness = 800;
 	rotationSpring.damping = 100;
-	rotationSpring.snapTo(hatRotation[currentMode()]);
+	rotationSpring.snapTo(hatRotation[currentMode.v]);
 
 	function select(mode: HiHatMachineMode) {
-		currentMode(mode);
+		currentMode.set(mode);
 		let rot = hatRotation[mode];
 		if (mode === "off" && rotationSpring.value < 0) rot = -rot;
 		rotationSpring.moveTo(rot);

@@ -1,12 +1,12 @@
-import { range, values } from "../../core/helpers/functions";
 import { Fret } from "./Fret";
 import { String } from "./String";
 import { BassDisplayStore } from "./bassDisplay";
 import { FretFinger } from "./FretFinger";
-import { MouseTracker } from "../../core/helpers/MouseTracker";
-import { createContext, useContext, For } from "solid-js";
-import { AppContext } from "../../stores/app";
 import { BassString } from "vmmx-schema";
+import { MouseTracker } from "../../helpers/mouseTracker";
+import { useContext, createContext } from "solid-js";
+import { AppContext } from "../../app";
+import { values, range } from "../../helpers/functions";
 
 export const BassContext = createContext<{
 	bass: BassDisplayStore;

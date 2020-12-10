@@ -1,24 +1,24 @@
 import { PlayPauseButton } from "./PlayPauseButton";
 import { RestartButton } from "./RestartButton";
 import { RecordButton } from "./RecordButton";
-import { signal } from "../../core/helpers/solid";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { s } from "../../helpers/solid";
 
 export const TransportControls = () => {
 	const app = useContext(AppContext);
-	const recording = signal(false);
+	const recording = s(false);
 	const player = app.player;
 
 	function togglePlay() {
-		if (player.running()) {
+		if (player.running.v) {
 			player.pause();
 		} else {
 			player.play();
 		}
 	}
 	function toggleRecord() {
-		recording(!recording());
+		recording.set(!recording.v);
 	}
 
 	return (
@@ -40,8 +40,8 @@ export const TransportControls = () => {
 					padding: "5px",
 				}}
 			>
-				<PlayPauseButton togglePlay={togglePlay} running={player.running()} />
-				<RecordButton toggleRecord={toggleRecord} recording={recording()} />
+				<PlayPauseButton togglePlay={togglePlay} running={player.running.v} />
+				<RecordButton toggleRecord={toggleRecord} recording={recording.v} />
 				<RestartButton restart={player.restart} />
 			</div>
 		</div>

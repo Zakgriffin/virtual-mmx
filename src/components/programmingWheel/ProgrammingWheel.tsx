@@ -5,13 +5,13 @@ import { ProgrammingWheelDisplayStore } from "./programmingWheelDisplay";
 import { GearSide } from "./GearSide";
 import { BottomBar } from "./bottomBar/BottomBar";
 import { useContext, createContext } from "solid-js";
-import { AppContext } from "../../stores/app";
 import { ScrollContainerStore } from "../scrollContainerStore";
-import { MouseTracker } from "../../core/helpers/MouseTracker";
-import { ScrollBody } from "../Scroll";
-import { signal } from "../../core/helpers/solid";
-import { mapValue } from "../../core/helpers/functions";
 import ResizeObserver from "resize-observer-polyfill";
+import { AppContext } from "../../app";
+import { mapValue } from "../../helpers/functions";
+import { MouseTracker } from "../../helpers/mouseTracker";
+import { s } from "../../helpers/solid";
+import { ScrollBody } from "../Scroll";
 
 export const ProgrammingWheelContext = createContext<{
 	wheel: ProgrammingWheelDisplayStore;
@@ -22,7 +22,7 @@ export const ProgrammingWheelContext = createContext<{
 export const ProgrammingWheel = () => {
 	const app = useContext(AppContext);
 
-	const pixelsPerTick = signal(0.2);
+	const pixelsPerTick = s(0.2);
 	const mouse = new MouseTracker();
 	const wheel = new ProgrammingWheelDisplayStore(app);
 	const scroll = new ScrollContainerStore({
@@ -39,7 +39,7 @@ export const ProgrammingWheel = () => {
 		circular: true,
 	});
 	// const scrollSpring = new SpringPulse();
-	mouse.scale({
+	mouse.scale.set({
 		x: scroll.x.fromPixel,
 		y: (v) => scroll.y.fromPixel(v) + scroll.y.visibleLeast(),
 	});
@@ -50,7 +50,7 @@ export const ProgrammingWheel = () => {
 	function handleScroll(e: WheelEvent) {
 		if (e.shiftKey) {
 			const factor = mapValue(e.deltaY, -10, 10, 1.1, 0.9);
-			scroll.y.zoom(factor, mouse.mousePos()?.y ?? 0);
+			scroll.y.zoom(factor, mouse.mousePos.v?.y ?? 0);
 		} else {
 			switch (e.deltaMode) {
 				// All non firefox browsers return delta in pixels

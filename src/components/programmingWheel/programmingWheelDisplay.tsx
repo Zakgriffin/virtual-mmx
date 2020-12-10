@@ -1,7 +1,8 @@
-import { range, mapArrayToObj } from "../../core/helpers/functions";
-import { AppStore } from "../../stores/app";
-import { DropEventTimeline, DropE } from "../../core/eventTimelines/concrete";
-import { signal, memo, once, Signal } from "../../core/helpers/solid";
+import { createMemo } from "solid-js";
+import { AppStore } from "../../app";
+import { VibraphoneDropTimeline } from "../../eventHandling/concrete";
+import { mapArrayToObj, range, values } from "../../helpers/functions";
+import { s, Signal } from "../../helpers/solid";
 
 export type NoteSubdivision =
 	| "whole"
@@ -34,11 +35,11 @@ export enum ChannelColor {
 /** A single VmmxInstrumentChannel with additional display related information. */
 export class DisplayChannel {
 	/** The vmmx instrument channel to display */
-	timeline: DropEventTimeline<DropE>;
+	timeline: VibraphoneDropTimeline;
 	/** The color of this channel */
 	channelColor: ChannelColor;
 
-	constructor(timeline: DropEventTimeline<any>, channelColor: ChannelColor) {
+	constructor(timeline: VibraphoneDropTimeline, channelColor: ChannelColor) {
 		this.timeline = timeline;
 		this.channelColor = channelColor;
 	}
@@ -119,32 +120,32 @@ export class ProgrammingWheelDisplayStore {
 	constructor(appStore: AppStore) {
 		this.appStore = appStore;
 
-		this.tpq = () => this.appStore.performance.program.metadata.tpq;
-		this.instrumentChannels = once(() => {
+		this.tpq = this.appStore.program.metadata.tpq;
+		this.displayChannels = (() => {
 			const channels: DisplayChannel[] = [];
-			const instruments = this.appStore.performance.program.dropEventTimelines;
+			const instruments = this.appStore.program.programDrop;
 
-			for (const channel of Object.values(instruments.vibraphone)) {
+			for (const channel of values(instruments.vibraphone)) {
 				channels.push(new DisplayChannel(channel, ChannelColor.DARK));
 			}
-			for (const channel of Object.values(instruments.drums)) {
+			for (const channel of values(instruments.drums)) {
 				channels.push(new DisplayChannel(channel, ChannelColor.LIGHT));
 			}
-			for (const channel of Object.values(instruments.bass)) {
+			for (const channel of values(instruments.bass)) {
 				channels.push(new DisplayChannel(channel, ChannelColor.DARK));
 			}
 
 			return channels;
-		});
+		})();
 		this.ticksPerNoteSubdivisions = () => ({
-			whole: this.tpq() * 4,
-			quarter: this.tpq() * 1,
-			eighth: this.tpq() / 2,
-			sixteenth: this.tpq() / 4,
-			triplet: (this.tpq() * 2) / 3,
+			whole: this.tpq.v * 4,
+			quarter: this.tpq.v * 1,
+			eighth: this.tpq.v / 2,
+			sixteenth: this.tpq.v / 4,
+			triplet: (this.tpq.v * 2) / 3,
 		});
-		this.ticksPerNoteSubdivision = memo(
-			() => this.ticksPerNoteSubdivisions()[this.subdivision()]
+		this.ticksPerNoteSubdivision = createMemo(
+			() => this.ticksPerNoteSubdivisions()[this.subdivision.v]
 		);
 		this.allSubdivisionLines = mapArrayToObj(noteSubdivisions, (n) =>
 			range(0, 61440, this.ticksPerNoteSubdivisions()[n as NoteSubdivision])
@@ -161,31 +162,31 @@ export class ProgrammingWheelDisplayStore {
 				return { stroke: "rgb(44, 44, 44)", strokeWidth: 1 };
 			},
 		});
-		this.subdivisionLineFunction = memo(
+		this.subdivisionLineFunction = createMemo(
 			() => this.subdivisionLineFunctions().primary
 		);
 
-		this.subdivision = signal<NoteSubdivision>("sixteenth");
+		this.subdivision = s<NoteSubdivision>("sixteenth");
 
-		this.subdivisionLines = memo(
-			() => this.allSubdivisionLines[this.subdivision()]
+		this.subdivisionLines = createMemo(
+			() => this.allSubdivisionLines[this.subdivision.v]
 		);
 		this.playbackHeadTick = () =>
-			appStore.player.currentTick() % this.totalTicks();
+			appStore.player.currentTick.v % this.totalTicks();
 
 		this.setSubdivision = (subdivision: NoteSubdivision) => {
-			this.subdivision(subdivision);
+			this.subdivision.set(subdivision);
 		};
 	}
 
-	visiblePixelWidth = signal(0);
-	visiblePixelHeight = signal(0);
+	visiblePixelWidth = s(0);
+	visiblePixelHeight = s(0);
 
 	tpq: Signal<number>;
 	totalTicks = () => 61440 / 4;
 
-	showEmpties = signal(false);
-	instrumentChannels: Signal<DisplayChannel[]>;
+	showEmpties = s(false);
+	displayChannels: DisplayChannel[];
 
 	pegOffsetFunction = () => this.pegOffsetFunctions().realistic;
 
@@ -201,21 +202,22 @@ export class ProgrammingWheelDisplayStore {
 			return 0;
 		},
 	});
-	subdivisionLineFunctions: Signal<
-		Record<SubdivisionLineFunctionKey, SubdivisionLineFunction>
+	subdivisionLineFunctions: () => Record<
+		SubdivisionLineFunctionKey,
+		SubdivisionLineFunction
 	>;
-	subdivisionLineFunction: Signal<SubdivisionLineFunction>;
+	subdivisionLineFunction: () => SubdivisionLineFunction;
 
-	subdivision = signal<NoteSubdivision>("sixteenth");
+	subdivision = s<NoteSubdivision>("sixteenth");
 
-	ticksPerNoteSubdivisions: Signal<Record<NoteSubdivision, number>>;
-	ticksPerNoteSubdivision: Signal<number>;
+	ticksPerNoteSubdivisions: () => Record<NoteSubdivision, number>;
+	ticksPerNoteSubdivision: () => number;
 
 	allSubdivisionLines: Record<string, number[]>;
 
-	subdivisionLines: Signal<number[]>;
+	subdivisionLines: () => number[];
 	// return appStore.player.currentTick % this.totalTicks;
-	playbackHeadTick: Signal<number>;
+	playbackHeadTick: () => number;
 
 	setSubdivision: (subdivision: NoteSubdivision) => void;
 }
