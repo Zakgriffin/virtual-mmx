@@ -5,8 +5,8 @@ import { ProgrammingWheelContext } from "./ProgrammingWheel";
 export const GearSide = () => {
 	const { scroll } = useContext(ProgrammingWheelContext);
 
-	const y = () => scroll.y.toPixel(-scroll.y.visibleLeast()) + 1;
-	const scale = () => scroll.y.pixelsPerUnit() * 280 * 3;
+	const y = () => scroll.y.toPixel(-scroll.y.visibleLeast.v) + 1;
+	const scale = () => scroll.y.pixelsPerUnit.v * 280 * 3;
 
 	return (
 		<div style={{ overflow: "hidden" }}>

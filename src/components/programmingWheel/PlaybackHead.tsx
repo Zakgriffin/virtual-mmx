@@ -8,7 +8,7 @@ export const PlaybackHead = () => {
 	return (
 		<TranslateOnScroll scroll={scroll} axis="y" by={wheel.playbackHeadTick}>
 			<line
-				x2={scroll.x.visiblePixelRange()}
+				x2={scroll.x.visiblePixelRange.v}
 				stroke="green"
 				strokeWidth={1.5}
 			/>

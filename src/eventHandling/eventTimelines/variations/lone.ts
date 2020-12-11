@@ -1,8 +1,7 @@
-import { insertInOrder, removeInOrder } from "../../../helpers/functions";
 import { TimelineEvent } from "../../concrete";
 import { EventTimeline } from "../eventTimeline";
 
-export class LoneTimeline<E = {}> extends EventTimeline<E> {
+export class LoneTimeline<E> extends EventTimeline<E> {
 	events: TimelineEvent<E>[] = [];
 
 	protected eventCanBePlaced(_: E) {
@@ -15,8 +14,8 @@ export class LoneTimeline<E = {}> extends EventTimeline<E> {
 	private containsEvent(event: E) {
 		return this.events.find((e) => e === event);
 	}
-	getAddDifs(event: E): LoneEventDif<E>[] | null {
-		if (this.eventCanBePlaced(event) && !this.tickOccupied(event.tick)) {
+	getAddDifs(event: E, tick: number): LoneEventDif<E>[] | null {
+		if (this.eventCanBePlaced(event) && !this.tickOccupied(tick)) {
 			return [{ type: "add", event }];
 		}
 		return null;
@@ -36,43 +35,43 @@ export class LoneTimeline<E = {}> extends EventTimeline<E> {
 		}
 	}
 	applyDifs(difs: LoneEventDif<E>[]): void {
-		for (const dif of difs) {
-			const { event } = dif;
-			switch (dif.type) {
-				case "add": {
-					insertInOrder(event, (e) => event.tick > e.tick, this.events);
-					this.triggerChange("add", event);
-					break;
-				}
-				case "remove": {
-					removeInOrder((e) => e.tick === event.tick, this.events);
-					this.triggerChange("remove", event);
-					break;
-				}
-				case "modify": {
-					Object.assign(event, dif.mod);
-					this.triggerChange("remove", event);
-					this.triggerChange("add", event);
-				}
-			}
-		}
+		// 	for (const dif of difs) {
+		// 		const { event } = dif;
+		// 		switch (dif.type) {
+		// 			case "add": {
+		// 				insertInOrder(event, (e) => event.tick > e.tick, this.events);
+		// 				this.triggerChange("add", event);
+		// 				break;
+		// 			}
+		// 			case "remove": {
+		// 				removeInOrder((e) => e.tick === event.tick, this.events);
+		// 				this.triggerChange("remove", event);
+		// 				break;
+		// 			}
+		// 			case "modify": {
+		// 				Object.assign(event, dif.mod);
+		// 				this.triggerChange("remove", event);
+		// 				this.triggerChange("add", event);
+		// 			}
+		// 		}
+		// 	}
 	}
 }
 
-interface LoneEventAddDif<E extends EventBase> {
+interface LoneEventAddDif<E> {
 	type: "add";
 	event: E;
 }
-interface LoneEventRemoveDif<E extends EventBase> {
+interface LoneEventRemoveDif<E> {
 	type: "remove";
 	event: E;
 }
-interface LoneEventModifyDif<E extends EventBase> {
+interface LoneEventModifyDif<E> {
 	type: "modify";
 	event: E;
 	mod: Partial<E>;
 }
-type LoneEventDif<E extends EventBase> =
+type LoneEventDif<E> =
 	| LoneEventAddDif<E>
 	| LoneEventRemoveDif<E>
 	| LoneEventModifyDif<E>;

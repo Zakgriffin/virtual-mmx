@@ -1,4 +1,3 @@
-import { PerformanceAction } from "./other";
 import { For, useContext } from "solid-js";
 import { PerformanceEditorContext } from "./PerformanceEditor";
 
@@ -38,7 +37,7 @@ export const TimelineTabs = () => {
 				{(action) => (
 					<TimelineTab
 						label={action}
-						selected={perf.selectedAction() === action}
+						selected={perf.selectedAction.v === action}
 						select={() => perf.setAction(action)}
 					/>
 				)}

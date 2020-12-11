@@ -1,8 +1,8 @@
+import { s } from "../../helpers/solid";
+import { SpringPhysics } from "../../helpers/springPhysics";
 import { HiHatMachineMode } from "../../toFutureSchema";
 import { ModeSelector } from "./ModeSelector";
 import { HiHatMachineBrass } from "./HiHatMachineBrass";
-import { SpringPhysics } from "../../helpers/springPhysics";
-import { s } from "../../helpers/solid";
 
 const hatRotation: Record<HiHatMachineMode, number> = {
 	beat: -30,

@@ -1,20 +1,21 @@
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { SpringPhysics } from "../../helpers/springPhysics";
 
 export const Bassdrum = () => {
 	const app = useContext(AppContext);
 
-	const pulse = new SpringPulse();
-	const bassdrumTimelines = app.jointTimelines.drums.bassdrum;
+	const pulse = new SpringPhysics();
+	const bassdrumObserver =
+		app.eventReactionHandler.dropEventObservers.drums.bassdrum;
 
-	bassdrumTimelines.addJointEventListener(animateHit);
+	bassdrumObserver.addEventListener(animateHit);
 
 	pulse.damping = 20;
 	pulse.stiffness = 300;
 
 	function handlePress() {
-		bassdrumTimelines.performance.triggerEvent();
+		bassdrumObserver.triggerEvent({});
 	}
 
 	function animateHit() {

@@ -1,19 +1,20 @@
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { SpringPhysics } from "../../helpers/springPhysics";
 
 export const Crash = () => {
 	const app = useContext(AppContext);
 
-	const pulse = new SpringPulse();
-	const crashTimelines = app.jointTimelines.drums.crash;
+	const pulse = new SpringPhysics();
+	const crashObservable =
+		app.eventReactionHandler.dropEventObservers.drums.crash;
 
-	crashTimelines.addJointEventListener(animateHit);
+	crashObservable.addEventListener(animateHit);
 	pulse.damping = 15;
 	pulse.stiffness = 500;
 
 	function handlePress() {
-		crashTimelines.performance.triggerEvent();
+		crashObservable.triggerEvent({});
 		animateHit();
 	}
 
@@ -25,7 +26,7 @@ export const Crash = () => {
 		<g
 			style={{
 				transform: `translate(50px, 91px) rotate(${pulse.value}deg)`,
-				cursor: 'pointer'
+				cursor: "pointer",
 			}}
 			onMouseDown={handlePress}
 		>

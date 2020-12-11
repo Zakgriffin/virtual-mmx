@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 
 export class Signal<T> {
-	getCurrent: () => T;
+	private getCurrent: () => T;
 	set: (v: T) => void;
 
 	constructor(val: T) {

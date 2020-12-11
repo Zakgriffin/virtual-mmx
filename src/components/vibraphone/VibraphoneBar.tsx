@@ -1,32 +1,33 @@
-import { noteToVibraphoneLength } from "../../core/helpers/functions";
-import { VibraphoneBarStore } from "../../stores/vibraphone";
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { noteToVibraphoneLength } from "../../helpers/functions";
+import { SpringPhysics } from "../../helpers/springPhysics";
+import { VibraphoneBarState } from "../../machineState/vibraphone";
 import { VibraphoneContext } from "./Vibraphone";
 
 interface VibraphoneBarProps {
-	barStore: VibraphoneBarStore;
+	barStore: VibraphoneBarState;
 }
 
 export const VibraphoneBar = (props: VibraphoneBarProps) => {
 	const { vibra } = useContext(VibraphoneContext);
 	const app = useContext(AppContext);
-	const pulse = new SpringPulse();
-	const vibraphoneTimelines = app.jointTimelines.vibraphone[props.barStore.bar];
+	const pulse = new SpringPhysics();
+	const vibraphoneObserver =
+		app.eventReactionHandler.dropEventObservers.vibraphone[props.barStore.bar];
 
-	vibraphoneTimelines.addJointEventListener(animateHit);
+	vibraphoneObserver.addEventListener(animateHit);
 	pulse.damping = 8;
 	pulse.stiffness = 100;
 	// TODO disposer?
 
 	const x = () => vibra.noteWidth * (props.barStore.bar - 1);
 	const y = () => -height() / 2 + pulse.value;
-	const height = () => noteToVibraphoneLength(props.barStore.note);
+	const height = () => noteToVibraphoneLength(props.barStore.note.v);
 
 	function handlePress(e: MouseEvent) {
 		if (e.buttons === 1) {
-			vibraphoneTimelines.performance.triggerEvent();
+			vibraphoneObserver.triggerEvent({});
 			animateHit();
 		}
 	}
@@ -41,7 +42,7 @@ export const VibraphoneBar = (props: VibraphoneBarProps) => {
 			onMouseDown={handlePress}
 			onMouseEnter={handlePress}
 			y={pulse.value}
-			style={{cursor: "pointer"}}
+			style={{ cursor: "pointer" }}
 		>
 			<rect
 				width={vibra.noteWidthPadded}
@@ -59,7 +60,7 @@ export const VibraphoneBar = (props: VibraphoneBarProps) => {
 				alignmentBaseline="central"
 				style={{ "user-select": "none" }}
 			>
-				{props.barStore.note}
+				{props.barStore.note.v}
 			</text>
 		</g>
 	);

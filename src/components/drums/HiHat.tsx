@@ -1,6 +1,5 @@
 import { useContext } from "solid-js";
 import { AppContext } from "../../app";
-import { HiHatDropE } from "../../eventHandling/concrete";
 import { SpringPhysics } from "../../helpers/springPhysics";
 
 export const HiHat = () => {
@@ -16,7 +15,7 @@ export const HiHat = () => {
 	pulse.stiffness = 300;
 
 	function handlePress() {
-		hihatTimelines.triggerEvent(new HiHatDropE({ tick: -1 }));
+		hihatTimelines.triggerEvent({});
 		animateHit();
 	}
 

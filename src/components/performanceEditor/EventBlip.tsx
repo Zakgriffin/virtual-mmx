@@ -1,14 +1,13 @@
-import { SpringPulse } from "../../core/helpers/springPulse";
-// import Draggable, { DraggableEvent, DraggableData } from "react-draggable";
 import { DraggableCollisionEvent } from "./other";
-import { EventBase } from "../../core/eventTimelines/types/other";
 import { Bounds } from "./EventCurve";
-import { Curve } from "../../core/eventTimelines/types/curves";
+import { SpringPhysics } from "../../helpers/springPhysics";
+import { Curve } from "../../eventHandling/eventTimelines/variations/curve";
+import { TimelineEvent } from "../../eventHandling/concrete";
 
-interface EventBlipProps<E extends EventBase> {
+interface EventBlipProps<E> {
 	curve: Curve<E>;
 	bounds: Bounds;
-	colorOf: (curve: Curve<E> | null) => string;
+	colorOf: (curve: Curve<TimelineEvent<E>> | null) => string;
 	selected: boolean;
 	setSelected: (selected: boolean) => void;
 	dragging: boolean;
@@ -17,8 +16,8 @@ interface EventBlipProps<E extends EventBase> {
 	valToPixel: (value: number) => number;
 }
 
-export function EventBlip<E extends EventBase>(props: EventBlipProps<E>) {
-	const bounce = new SpringPulse();
+export function EventBlip<E>(props: EventBlipProps<E>) {
+	const bounce = new SpringPhysics();
 
 	bounce.damping = 20;
 	bounce.stiffness = 200;

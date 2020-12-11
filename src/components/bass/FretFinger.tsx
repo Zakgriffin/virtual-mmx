@@ -5,12 +5,12 @@ export const FretFinger = () => {
 	const { bass, mouse } = useContext(BassContext);
 
 	const x = () => {
-		const mouseX = mouse.mousePos()?.x;
+		const mouseX = mouse.mousePos.v?.x;
 		if (!mouseX) return 0;
 		return bass.stringToPixel(Math.round(bass.pixelToString(mouseX)));
 	};
 	const y = () => {
-		const mouseY = mouse.mousePos()?.y;
+		const mouseY = mouse.mousePos.v?.y;
 		if (!mouseY) return 0;
 
 		return (

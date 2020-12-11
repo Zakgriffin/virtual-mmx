@@ -14,7 +14,7 @@ export const SubdivisionLine = (props: SubdivisionLineProps) => {
 	return (
 		<TranslateOnScroll scroll={scroll} axis="y" by={() => props.tick}>
 			<line
-				x2={scroll.x.visiblePixelRange()}
+				x2={scroll.x.visiblePixelRange.v}
 				stroke={lineStyle().stroke}
 				strokeWidth={lineStyle().strokeWidth}
 			/>

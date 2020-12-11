@@ -1,21 +1,21 @@
 // import Draggable, { DraggableEvent, DraggableData } from "react-draggable";
-import { BassStringStore } from "../../stores/bass";
-import { SpringPulse } from "../../core/helpers/springPulse";
 import { createEffect, useContext } from "solid-js";
+import { SpringPhysics } from "../../helpers/springPhysics";
+import { BassStringState } from "../../machineState/bass";
 import { BassContext } from "./Bass";
 
 interface CapoProps {
-	stringStore: BassStringStore;
+	stringStore: BassStringState;
 }
 
-const Capo = (props: CapoProps) => {
+export const Capo = (props: CapoProps) => {
 	const { bass } = useContext(BassContext);
-	const capoFluid = new SpringPulse();
+	const capoFluid = new SpringPhysics();
 
 	capoFluid.stiffness = 1000;
 	capoFluid.damping = 50;
 
-	const capo = () => props.stringStore.capo;
+	const capo = () => props.stringStore.capo.v;
 
 	createEffect(() => {
 		capoFluid.moveTo(bass.fretToPixel(capo()));

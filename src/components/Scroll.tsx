@@ -12,8 +12,8 @@ export const ScrollBody = (props: ScrollProps) => {
 	return (
 		<g
 			transform={`translate(
-				${-x.toPixel(x.visibleLeast())}, 
-				${-y.toPixel(y.visibleLeast())}
+				${-x.toPixel(x.visibleLeast.v)}, 
+				${-y.toPixel(y.visibleLeast.v)}
 			)`}
 		>
 			{props.children}
@@ -24,7 +24,7 @@ export const ScrollBody = (props: ScrollProps) => {
 interface ScrollByProps {
 	scroll: ScrollContainerStore;
 	axis: "x" | "y";
-	by: Signal<number>;
+	by: () => number;
 	children: JSX.Element;
 }
 
@@ -36,7 +36,7 @@ export const TranslateOnScroll = (props: ScrollByProps) => {
 	const axis = props.scroll[props.axis];
 
 	return (
-		<g transform={translateBy(props.by.v * axis.pixelsPerUnit())}>
+		<g transform={translateBy(props.by() * axis.pixelsPerUnit.v)}>
 			{props.children}
 		</g>
 	);

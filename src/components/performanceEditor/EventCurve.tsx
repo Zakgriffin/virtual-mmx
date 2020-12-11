@@ -1,27 +1,26 @@
+import { TimelineEvent } from "../../eventHandling/concrete";
+import { Curve } from "../../eventHandling/eventTimelines/variations/curve";
 import { EventBlip } from "./EventBlip";
-import { Curve } from "../../core/eventTimelines/types/curves";
-import { EventBase } from "../../core/eventTimelines/types/other";
-import { Show } from "solid-js";
 
 export interface Bounds {
 	left: number;
 	right: number;
 }
 
-interface EventCurveProps<E extends EventBase> {
-	curve: Curve<E>;
+interface EventCurveProps<E> {
+	curve: Curve<TimelineEvent<E>>;
 	bounds: { start: Bounds; end: Bounds };
 	selectedEvent: E | undefined;
 	setSelected: (event: E | undefined) => void;
 	dragging: boolean;
 	setDragging: (dragging: boolean) => void;
-	shouldShow: (curve: Curve<E>) => boolean;
-	colorOf: (curve: Curve<E> | null) => string;
+	shouldShow: (curve: Curve<TimelineEvent<E>>) => boolean;
+	colorOf: (curve: Curve<TimelineEvent<E>> | null) => string;
 	value: (event: E) => number;
 	valToPixel: (value: number) => number;
 }
 
-export function EventCurve<E extends EventBase>(props: EventCurveProps<E>) {
+export function EventCurve<E>(props: EventCurveProps<E>) {
 	function setStartSelected(shouldSelect: boolean) {
 		setSelected(props.curve.start, shouldSelect);
 	}
@@ -41,8 +40,8 @@ export function EventCurve<E extends EventBase>(props: EventCurveProps<E>) {
 		<g>
 			{p.shouldShow(p.curve) && (
 				<line
-					x1={p.curve.start?.tick() ?? 0}
-					x2={p.curve.end?.tick() ?? 9000} // TODO not fixed
+					x1={p.curve.start?.tick ?? 0}
+					x2={p.curve.end?.tick ?? 9000} // TODO not fixed
 					y1={y1}
 					y2={y2}
 					stroke={p.colorOf(p.curve)}

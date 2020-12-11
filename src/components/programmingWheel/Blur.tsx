@@ -16,14 +16,14 @@ export const Blur = () => {
 			<rect
 				x={0}
 				y={-70}
-				width={scroll.x.visiblePixelRange()}
+				width={scroll.x.visiblePixelRange.v}
 				height={70}
 				style={{ fill: "#ddd2", filter: "url(#wheelBlurTop)" }}
 			/>
 			<rect
 				x={0}
-				y={-70 - scroll.y.visiblePixelRange()}
-				width={scroll.x.visiblePixelRange()}
+				y={-70 - scroll.y.visiblePixelRange.v}
+				width={scroll.x.visiblePixelRange.v}
 				height={70}
 				style={{
 					fill: "#000a",

@@ -1,15 +1,14 @@
 import { ChannelGroupTOFIX } from "../../toFutureSchema";
-import { EventPolylineContainer } from "./EventPolylineContainer";
-import { keys } from "../../core/helpers/functions";
 import { StackedTimeline } from "./StackedTimelines";
-import { MuteE } from "../../core/eventTimelines/concrete";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { keys } from "../../helpers/functions";
+import { CurveTimelineContainer } from "./CurveTimelineContainer";
 
 export const MuteActionEditor = () => {
 	const app = useContext(AppContext);
 
-	const timelines = app.performance.eventTimelines.machine.channelMute;
+	const timelines = app.performance.stateChange.extra.channelMute;
 	const colors: Record<ChannelGroupTOFIX, string> = {
 		bass: "#85200c",
 		vibraphone: "#1155cc",
@@ -22,14 +21,15 @@ export const MuteActionEditor = () => {
 	return (
 		<StackedTimeline labels={keys(timelines)}>
 			{(label) => (
-				<EventPolylineContainer
-					timeline={timelines[label]}
-					shouldShow={(c) => c.start.mute}
-					colorOf={() => colors[label]}
-					value={() => 1}
-					valToPixel={() => 0}
-					newEventAt={(tick) => new MuteE({ mute: true, tick })}
-				/>
+				// <CurveTimelineContainer
+				// 	timeline={timelines[label]}
+				// 	shouldShow={(c) => c.start.mute}
+				// 	colorOf={() => colors[label]}
+				// 	value={() => 1}
+				// 	valToPixel={() => 0}
+				// 	newEventAt={(tick) => new MuteE({ mute: true, tick })}
+				// />
+				<div />
 			)}
 		</StackedTimeline>
 	);

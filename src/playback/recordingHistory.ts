@@ -1,20 +1,21 @@
 import { EventObservable } from "../eventHandling/eventObserver";
-import { EventTimeline } from "../eventHandling/eventTimelines/eventTimeline";
 import { s } from "../helpers/solid";
 
 export class RecordingHandler {
 	editingSection: "program" | "performance" = "program";
 	public recording = s(false);
 
-	createRecordingHistory<E>(
-		timeline: EventTimeline<E>,
+	createRecordingHistory<E, BatchUndo>(
+		addBatched: (events: E[]) => BatchUndo,
+		undoBatched: (undo: BatchUndo) => void,
 		observable: EventObservable<E>,
 		editingSection: "program" | "performance"
 	) {
 		return new RecordingHistory(
-			timeline,
 			observable,
-			() => this.recording.v && this.editingSection === editingSection
+			() => this.recording.v && this.editingSection === editingSection,
+			addBatched,
+			undoBatched
 		);
 	}
 }
@@ -28,9 +29,10 @@ class RecordingHistory<E, BatchUndo> {
 	undoKeyListener?: (e: KeyboardEvent) => void;
 
 	constructor(
-		private timeline: EventTimeline<E>,
 		private observable: EventObservable<E>,
-		private recording: () => boolean
+		private recording: () => boolean,
+		private addBatched: (events: E[]) => BatchUndo,
+		private undoBatched: (undo: BatchUndo) => void
 	) {}
 
 	triggerEvent(event: E) {
@@ -61,7 +63,7 @@ class RecordingHistory<E, BatchUndo> {
 	}
 	stopBatch() {
 		this.batchRecording = false;
-		const undo = this.timeline.addBatched(this.batchedToAdd);
+		const undo = this.addBatched(this.batchedToAdd);
 		this.history.push(undo);
 	}
 
@@ -70,6 +72,7 @@ class RecordingHistory<E, BatchUndo> {
 	}
 	undoBatch() {
 		const undo = this.history.pop();
-		this.timeline.undoBatched(undo);
+		if (!undo) return;
+		this.undoBatched(undo);
 	}
 }

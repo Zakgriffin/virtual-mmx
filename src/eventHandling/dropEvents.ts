@@ -1,12 +1,21 @@
 import { mapArrayToObj } from "../helpers/functions";
-import { bassStrings, drumTypes, vibraphoneBars } from "../toFutureSchema";
-import { BassDropE, HiHatDropE } from "./concrete";
+import { bassStrings, vibraphoneBars } from "../toFutureSchema";
+import { BassDropE, EmptyE, HiHatDropE } from "./concrete";
 import { LoneTimeline } from "./eventTimelines/variations/lone";
 
 export class DropEvents {
 	bass = mapArrayToObj(bassStrings, () => new LoneTimeline<BassDropE>());
-	drums = mapArrayToObj(drumTypes, (drumType) =>
-		drumType === "hihat" ? new LoneTimeline<HiHatDropE>() : new LoneTimeline()
-	);
-	vibraphone = mapArrayToObj(vibraphoneBars, () => new LoneTimeline());
+	drums = {
+		hihat: new LoneTimeline<HiHatDropE>(),
+		bassdrum: new LoneTimeline<EmptyE>(),
+		snare: new LoneTimeline<EmptyE>(),
+		crash: new LoneTimeline<EmptyE>(),
+	};
+
+	vibraphone = mapArrayToObj(vibraphoneBars, () => new LoneTimeline<EmptyE>());
 }
+
+// mapArrayToObj(drumTypes, (drumType) =>
+// drumType === "hihat"
+// 	? new LoneTimeline<HiHatDropE>()
+// 	: new LoneTimeline<EmptyE>());

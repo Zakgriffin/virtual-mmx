@@ -26,8 +26,8 @@ export const PerformanceEditor = () => {
 	showSpring.snapTo(130);
 
 	createDependentEffect(() => {
-		showSpring.moveTo(perf.open() ? 0 : 130);
-	}, [perf.open]);
+		showSpring.moveTo(perf.open.v ? 0 : 130);
+	}, [() => perf.open.v]);
 
 	return (
 		<PerformanceEditorContext.Provider value={{ perf, scroll }}>

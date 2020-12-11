@@ -1,6 +1,6 @@
-import { mapValue } from "../../core/helpers/functions";
 import { RunningTimeline } from "./RunningTimeline";
 import { For } from "solid-js";
+import { mapValue } from "../../helpers/functions";
 
 interface StackedTimelineProps<T> {
 	labels: T[];

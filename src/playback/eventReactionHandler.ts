@@ -1,3 +1,4 @@
+import { EmptyE, HiHatDropE } from "../eventHandling/concrete";
 import { DropEvents } from "../eventHandling/dropEvents";
 import {
 	EventObserverListener,
@@ -17,8 +18,8 @@ import {
 import { toneObserve } from "./toneObserve";
 
 export class EventReactionHandler {
-	dropEventObservers;
-	stateChangeObservers;
+	dropEventObservers: any; // TODO shitty dumn dumn typescript not adhering to its own "as const"
+	stateChangeObservers: any;
 
 	constructor(
 		machineState: MachineState,
@@ -28,11 +29,15 @@ export class EventReactionHandler {
 		stateChange: StateChangeEvents
 	) {
 		this.dropEventObservers = dropEventObservers(
-			soundEmitter,
 			programDrop,
-			performanceDrop
+			performanceDrop,
+			soundEmitter
 		);
-		this.stateChangeObservers = stateChangeObservers(machineState, stateChange);
+		this.stateChangeObservers = stateChangeObservers(
+			stateChange,
+			machineState,
+			soundEmitter
+		);
 	}
 }
 
@@ -51,15 +56,17 @@ function eventObservable<E>(setup: {
 }
 
 const stateChangeObservers = (
+	stateChange: StateChangeEvents,
 	machineState: MachineState,
-	stateChange: StateChangeEvents
+	soundEmitter: SoundEmitter
 ) => ({
-	machine: {
+	extra: {
 		channelMute: mapArrayToObj(channelGroups, (channelGroup) =>
 			eventObservable({
 				performanceTimeline: stateChange.extra.channelMute[channelGroup],
 				listener(event) {
 					machineState.extra.mute[channelGroup].set(event.mute);
+					soundEmitter.state.mutingLever.playSound(event);
 				},
 			})
 		),
@@ -108,34 +115,43 @@ const stateChangeObservers = (
 });
 
 const dropEventObservers = (
-	soundEmitter: SoundEmitter,
 	programDrop: DropEvents,
-	performanceDrop: DropEvents
+	performanceDrop: DropEvents,
+	soundEmitter: SoundEmitter
 ) => ({
 	bass: mapArrayToObj(bassStrings, (bassString) =>
 		eventObservable({
 			performanceTimeline: performanceDrop.bass[bassString],
 			programTimeline: programDrop.bass[bassString],
 			listener(event, time) {
-				soundEmitter.drop.bass.channels[bassString].triggerStrike(event, time);
+				soundEmitter.drop.bass.channels[bassString].playSound(event, time);
 			},
 		})
 	),
-	drums: mapArrayToObj(drumTypes, (drumType) =>
+	// TODO this is absolutely abysmal
+	drums: (mapArrayToObj(drumTypes, (drumType) =>
 		eventObservable({
-			performanceTimeline: performanceDrop.drums[drumType],
-			programTimeline: programDrop.drums[drumType],
+			performanceTimeline: performanceDrop.drums[drumType] as any,
+			programTimeline: programDrop.drums[drumType] as any,
 			listener(event, time) {
-				soundEmitter.drop.drums.channels[drumType].triggerStrike(event, time);
+				soundEmitter.drop.drums.channels[drumType].playSound(
+					event as any,
+					time
+				);
 			},
 		})
-	),
+	) as unknown) as {
+		bassdrum: EventObservable<EmptyE>;
+		hihat: EventObservable<HiHatDropE>;
+		snare: EventObservable<EmptyE>;
+		crash: EventObservable<EmptyE>;
+	},
 	vibraphone: mapArrayToObj(vibraphoneBars, (vibraphoneBar) =>
 		eventObservable({
 			performanceTimeline: performanceDrop.vibraphone[vibraphoneBar],
 			programTimeline: programDrop.vibraphone[vibraphoneBar],
 			listener(event, time) {
-				soundEmitter.drop.vibraphone.channels[vibraphoneBar].triggerStrike(
+				soundEmitter.drop.vibraphone.channels[vibraphoneBar].playSound(
 					event,
 					time
 				);

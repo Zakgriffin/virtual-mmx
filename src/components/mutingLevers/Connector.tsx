@@ -1,4 +1,4 @@
-import { mapValue } from "../../core/helpers/functions";
+import { mapValue } from "../../helpers/functions";
 
 interface ConnectorProps {
 	offset: number;

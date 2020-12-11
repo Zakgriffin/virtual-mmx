@@ -1,9 +1,9 @@
 import { VibraphoneBar } from "./VibraphoneBar";
 import { createContext, useContext, For } from "solid-js";
 import { VibraphoneDisplayStore } from "./vibraphoneDisplay";
-import { AppContext } from "../../stores/app";
-import { values } from "../../core/helpers/functions";
 import { TranslateGroup } from "../Translate";
+import { AppContext } from "../../app";
+import { values } from "../../helpers/functions";
 
 export const VibraphoneContext = createContext<{
 	vibra: VibraphoneDisplayStore;
@@ -12,7 +12,7 @@ export const VibraphoneContext = createContext<{
 export const Vibraphone = () => {
 	const app = useContext(AppContext);
 	const vibra = new VibraphoneDisplayStore();
-	const barStores = values(app.performance.program.state.vibraphone.barStores);
+	const barStates = app.machineState.vibraphone.barStates;
 
 	return (
 		<VibraphoneContext.Provider value={{ vibra }}>
@@ -24,7 +24,7 @@ export const Vibraphone = () => {
 				}}
 			>
 				<TranslateGroup y={() => vibra.height / 2}>
-					<For each={barStores}>
+					<For each={values(barStates)}>
 						{(barStore) => <VibraphoneBar barStore={barStore} />}
 					</For>
 				</TranslateGroup>

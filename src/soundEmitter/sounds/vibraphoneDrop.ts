@@ -1,10 +1,10 @@
 import { VibraphoneState } from "../../machineState/vibraphone";
 import { vibraphoneBars, VibraphoneBarTOFIX } from "../../toFutureSchema";
 import { Sampler, Volume, context, Destination } from "tone";
-import { VibraphoneDropE } from "../../eventHandling/concrete";
 import { mapArrayToObj, values } from "../../helpers/functions";
 import { Note } from "vmmx-schema";
 import { Signal } from "../../helpers/solid";
+import { EmptyE } from "../../eventHandling/concrete";
 
 export class VibraphoneDropSound {
 	readonly channels: Record<VibraphoneBarTOFIX, VibraphoneBarDropSound>;
@@ -41,12 +41,12 @@ export class VibraphoneBarDropSound {
 		this.vibraphoneSampler = sampler;
 	}
 
-	triggerStrike = (_: VibraphoneDropE, time?: number) => {
+	playSound(_: EmptyE, time?: number) {
 		if (this.vibraphoneSampler?.loaded) {
 			this.vibraphoneSampler.triggerAttack(
 				this.note.v,
 				time ?? context.currentTime
 			);
 		}
-	};
+	}
 }

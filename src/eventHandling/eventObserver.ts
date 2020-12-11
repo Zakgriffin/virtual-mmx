@@ -11,18 +11,3 @@ export class EventObservable<E> {
 		this.eventListeners.push(listener);
 	}
 }
-
-class SourceEventObservable<E> {
-	recording: boolean;
-	input = new EventObservable<E>();
-	timeline;
-
-	constructor() {
-		this.input.addEventListener((event, time) => {
-			if (this.recording) {
-				this.timeline.addEvent(event);
-			} else {
-			}
-		});
-	}
-}

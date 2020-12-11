@@ -1,6 +1,4 @@
 import { For } from "solid-js";
-import { Signal, signal } from "../../core/helpers/solid";
-import { mapArrayToObj } from "../../core/helpers/functions";
 
 import { HiHatMachineMode } from "../../toFutureSchema";
 
@@ -9,6 +7,8 @@ import offbeat from "./modeIcons/offbeat.min.svg";
 import sixteenth from "./modeIcons/sixteenth.min.svg";
 import triplet from "./modeIcons/triplet.min.svg";
 import dot from "./modeIcons/dot.min.svg";
+import { s, Signal } from "../../helpers/solid";
+import { mapArrayToObj } from "../../helpers/functions";
 
 const modeOptionIcon: Record<HiHatMachineMode, any> = {
 	beat: beat,
@@ -41,22 +41,22 @@ interface ModeSelectorProps {
 }
 
 export const ModeSelector = (props: ModeSelectorProps) => {
-	const currentHover = signal<HoverState>(null);
-	const mouseDown = signal(false);
+	const currentHover = s<HoverState>(null);
+	const mouseDown = s(false);
 
-	const activeHighlighted = () => getHighlightsFromMode(props.currentMode());
-	const hoverHighlighted = () => getHighlightsFromMode(currentHover());
+	const activeHighlighted = () => getHighlightsFromMode(props.currentMode.v);
+	const hoverHighlighted = () => getHighlightsFromMode(currentHover.v);
 
 	function hover(state: HoverState) {
-		currentHover(state);
+		currentHover.set(state);
 		// This is still a little quirky, halp
 		// (Press down, move out, come back. Releasing triggers a click but it isn't
 		//  shown darker.)
-		mouseDown(false);
+		mouseDown.set(false);
 	}
 
 	function press(down: boolean) {
-		mouseDown(down);
+		mouseDown.set(down);
 	}
 
 	return (
@@ -93,14 +93,14 @@ export const ModeSelector = (props: ModeSelectorProps) => {
 							hover={hoverHighlighted()[mode]}
 							onClick={props.selectMode}
 							onHoverChange={hover}
-							mouseDown={mouseDown()}
+							mouseDown={mouseDown.v}
 						/>
 					)}
 				</For>
 			</div>
 			<OffOption
-				active={props.currentMode() === "off"}
-				hover={currentHover() === "off"}
+				active={props.currentMode.v === "off"}
+				hover={currentHover.v === "off"}
 				onClick={props.selectMode}
 				onHoverChange={hover}
 			/>

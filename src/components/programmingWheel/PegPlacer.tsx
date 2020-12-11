@@ -1,4 +1,3 @@
-import { DropE } from "../../core/eventTimelines/concrete";
 import { useContext, Show } from "solid-js";
 import { ProgrammingWheelContext } from "./ProgrammingWheel";
 import { TranslateOnScroll } from "../Scroll";
@@ -7,7 +6,7 @@ export const PegPlacer = () => {
 	const { wheel, scroll, mouse } = useContext(ProgrammingWheelContext);
 
 	const mouseSnapped = () => {
-		const m = mouse.mousePos();
+		const m = mouse.mousePos.v;
 		if (!m) return;
 		const div = wheel.ticksPerNoteSubdivision();
 		const modded = m.y % wheel.totalTicks();
@@ -19,20 +18,20 @@ export const PegPlacer = () => {
 	const timeline = () => {
 		const channelNumber = mouseSnapped()?.mouseChannel;
 		if (channelNumber === undefined || channelNumber === Infinity) return null;
-		return wheel.instrumentChannels()[channelNumber].timeline;
+		return wheel.displayChannels[channelNumber].timeline;
 	};
 	const alreadyPlaced = () => {
 		const t = timeline();
 		const mouseTick = mouseSnapped()?.mouseTick;
 		if (mouseTick === undefined || mouseTick < 0 || !t) return true;
-		return t.events().some((e) => e.tick() === mouseTick);
+		return t.events.some((e) => e.tick === mouseTick);
 	};
 
 	function addPeg() {
 		const t = timeline();
 		const mouseTick = mouseSnapped()?.mouseTick;
 		if (mouseTick === undefined || mouseTick < 0 || !t) return;
-		const difs = t.getAddDifs(new DropE({ tick: mouseTick }));
+		const difs = t.getAddDifs({}, mouseTick);
 		if (!difs) return;
 		t.applyDifs(difs);
 	}
@@ -55,7 +54,7 @@ export const PegPlacer = () => {
 					<rect
 						onMouseDown={addPeg}
 						onMouseMove={(e) => e.buttons === 1 && addPeg()}
-						style={{cursor: 'pointer'}}
+						style={{ cursor: "pointer" }}
 						width={scroll.x.toPixel(1)}
 						height={height()}
 						fill="#0004"

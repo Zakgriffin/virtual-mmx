@@ -48,7 +48,7 @@ export const WheelChannels = () => {
 
 	return (
 		<g>
-			<For each={wheel.instrumentChannels()}>
+			<For each={wheel.displayChannels}>
 				{(channel, channelNumber) => (
 					<WheelChannel
 						displayChannel={channel}

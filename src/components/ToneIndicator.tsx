@@ -1,15 +1,15 @@
 import { useContext } from "solid-js";
-import { AppContext } from "../stores/app";
+import { AppContext } from "../app";
 
 export const ToneIndicator = () => {
 	const app = useContext(AppContext);
-	const loaded = app.player.toneLoaded;
+	const loaded = app.soundEmitter.toneLoaded;
 
 	return (
 		<div
 			style={{
 				position: "absolute",
-				background: loaded() ? "lime" : "red",
+				background: loaded.v ? "lime" : "red",
 				fontSize: 12,
 				padding: 5,
 				borderRadius: 8,
@@ -17,7 +17,7 @@ export const ToneIndicator = () => {
 				userSelect: "none",
 			}}
 		>
-			{loaded() ? "Tone Loaded" : "Tone Not Loaded"}
+			{loaded.v ? "Tone Loaded" : "Tone Not Loaded"}
 		</div>
 	);
 };

@@ -4,9 +4,12 @@ import { BassDisplayStore } from "./bassDisplay";
 import { FretFinger } from "./FretFinger";
 import { BassString } from "vmmx-schema";
 import { MouseTracker } from "../../helpers/mouseTracker";
-import { useContext, createContext } from "solid-js";
+import { useContext, createContext, For } from "solid-js";
 import { AppContext } from "../../app";
 import { values, range } from "../../helpers/functions";
+import { BassStringState } from "../../machineState/bass";
+import { EventObservable } from "../../eventHandling/eventObserver";
+import { BassCapoE } from "../../eventHandling/concrete";
 
 export const BassContext = createContext<{
 	bass: BassDisplayStore;
@@ -18,7 +21,8 @@ export const Bass = () => {
 
 	const bass = new BassDisplayStore();
 	const mouse = new MouseTracker();
-	const stringStores = values(app.performance.program.state.bass.stringStores);
+	const stringStates = app.machineState.bass.stringStates;
+	const stringObservables = app.eventReactionHandler.stateChangeObservers.bass;
 
 	/** Circle markings for each fret on bass neck */
 	const fretDatas = range(1, bass.totalFrets + 1).map((n) => {
@@ -32,19 +36,25 @@ export const Bass = () => {
 	});
 
 	// currently hovered bass string or undefined
-	const hoveredString = () => {
-		const m = mouse.mousePos();
+	const hoveredString = ():
+		| [BassStringState, EventObservable<BassCapoE>]
+		| undefined => {
+		const m = mouse.mousePos.v;
 		if (!m) return;
 		const percentX = m.x / bass.viewWidth;
 		const hoveredStringNumber = Math.ceil(percentX * 4) as BassString;
-		return app.performance.program.state.bass.stringStores[hoveredStringNumber];
+		return [
+			stringStates[hoveredStringNumber],
+			stringObservables.capo[hoveredStringNumber],
+		];
 	};
 
 	// handle mouse wheel scrolling
 	function handleWheel(e: WheelEvent) {
 		const h = hoveredString();
 		if (!h) return;
-		h.moveCapo(h.capo + (e.deltaY > 0 ? 1 : -1));
+		const [state, obs] = h;
+		obs.triggerEvent({ moveFret: state.capo.v + (e.deltaY > 0 ? 1 : -1) });
 	}
 
 	let fretBoardRef!: SVGSVGElement;
@@ -71,7 +81,7 @@ export const Bass = () => {
 						<Fret fret={fretData.fret} markings={fretData.markings} />
 					)}
 				</For>
-				<For each={stringStores}>
+				<For each={values(stringStates)}>
 					{(stringStore) => <String stringStore={stringStore} />}
 				</For>
 				<FretFinger />

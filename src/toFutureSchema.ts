@@ -1,4 +1,6 @@
-// TODO this should be part of schema, and it should be VibraphoneBar
+// TODO this should be part of schema
+
+// There are also a bunch of proposal changes I'm thinking of
 
 // Vibraphone
 export const vibraphoneBars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] as const;

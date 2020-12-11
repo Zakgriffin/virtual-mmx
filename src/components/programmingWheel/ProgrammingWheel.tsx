@@ -27,12 +27,13 @@ export const ProgrammingWheel = () => {
 	const wheel = new ProgrammingWheelDisplayStore(app);
 	const scroll = new ScrollContainerStore({
 		x: {
-			pixelsPerUnit: () =>
-				wheel.visiblePixelWidth() / wheel.instrumentChannels().length,
+			pixelsPerUnit: s(
+				wheel.visiblePixelWidth.v / wheel.displayChannels.length
+			),
 			visiblePixelRange: wheel.visiblePixelWidth,
 		},
 		y: {
-			pixelsPerUnit: pixelsPerTick,
+			pixelsPerUnit: s(pixelsPerTick.v),
 			visiblePixelRange: wheel.visiblePixelHeight,
 			total: wheel.totalTicks,
 		},
@@ -41,7 +42,7 @@ export const ProgrammingWheel = () => {
 	// const scrollSpring = new SpringPulse();
 	mouse.scale.set({
 		x: scroll.x.fromPixel,
-		y: (v) => scroll.y.fromPixel(v) + scroll.y.visibleLeast(),
+		y: (v) => scroll.y.fromPixel(v) + scroll.y.visibleLeast.v,
 	});
 
 	// scrollSpring.damping = 30;
@@ -116,8 +117,8 @@ export const ProgrammingWheel = () => {
 	new ResizeObserver(() => {
 		// this API sucks and doesn't work right
 		const box = mouseRef.getBoundingClientRect();
-		wheel.visiblePixelWidth(box.width);
-		wheel.visiblePixelHeight(box.height);
+		wheel.visiblePixelWidth.set(box.width);
+		wheel.visiblePixelHeight.set(box.height);
 	}).observe(mouseRef);
 
 	return jsx;
@@ -131,7 +132,7 @@ const MovingWindow = () => {
 			<ProgramGrid />
 			<PegPlacer />
 			<PlaybackHead />
-			<line x2={scroll.x.visiblePixelRange()} stroke="red" />
+			<line x2={scroll.x.visiblePixelRange.v} stroke="red" />
 		</ScrollBody>
 	);
 };

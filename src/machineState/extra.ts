@@ -1,5 +1,7 @@
 import { s } from "../helpers/solid";
 
+// export type MuteState = Record<ChannelGroupTOFIX, Signal<boolean>>;
+
 export class ExtraState {
 	readonly mute = {
 		bassdrum: s(false),

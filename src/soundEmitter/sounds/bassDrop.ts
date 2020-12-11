@@ -50,7 +50,7 @@ export class BassStringDropSound {
 			"G5",
 		];
 		this.bassSampler = new Sampler(
-			mapArrayToObj(notes, (note) => note + ".wav"),
+			mapArrayToObj(notes, (note) => note.replace("#", "S") + ".wav"),
 			undefined,
 			"./samples/bass/"
 		);
@@ -64,7 +64,7 @@ export class BassStringDropSound {
 		this.bassSampler.chain(volume, pitchShifter, Destination);
 	}
 
-	triggerStrike(event: BassDropE, time?: number) {
+	playSound(event: BassDropE, time?: number) {
 		if (this.bassSampler?.loaded) {
 			this.bassSampler.triggerAttack(
 				this.stringState.tuning.v,

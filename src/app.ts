@@ -30,4 +30,8 @@ export class AppStore {
 	);
 
 	midiInstrumentUse = new MidiInstrumentUse();
+
+	setupTesting() {
+		console.log("unimplemented");
+	}
 }

@@ -16,7 +16,7 @@ export const SubdivisionOption = (props: SubdivisionOptionProps) => {
 	}
 
 	function selected() {
-		return wheel.subdivision() === props.division;
+		return wheel.subdivision.v === props.division;
 	}
 
 	return (

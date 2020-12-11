@@ -4,11 +4,12 @@ import { MuteE } from "../../eventHandling/concrete";
 export class MutingLeverSound {
 	mutingLeverSample?: Sampler;
 
-	triggerStrike(_: MuteE, time?: number) {
+	playSound(_: MuteE, time?: number) {
 		if (this.mutingLeverSample?.loaded) {
 			this.mutingLeverSample.triggerAttack("A1", time ?? context.currentTime);
 		}
 	}
+
 	onToneLoad() {
 		const mutingLeverSample = new Sampler(
 			{

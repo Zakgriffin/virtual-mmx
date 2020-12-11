@@ -1,8 +1,8 @@
-import { mapValue } from "../../core/helpers/functions";
 import { RunningTimeline } from "./RunningTimeline";
 import { For, useContext } from "solid-js";
 import { ScrollBody } from "../Scroll";
 import { PerformanceEditorContext } from "./PerformanceEditor";
+import { mapValue } from "../../helpers/functions";
 
 interface ValueTimelineProps {
 	labels: number[];

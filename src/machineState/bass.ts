@@ -28,6 +28,7 @@ export class BassState {
 		(string) => ({
 			string,
 			tuning: this.tuning[string],
+			capo: this.capos[string],
 		})
 	);
 }
@@ -35,4 +36,5 @@ export class BassState {
 export interface BassStringState {
 	string: BassStringTOFIX;
 	tuning: Signal<Note>;
+	capo: Signal<number>;
 }

@@ -1,5 +1,7 @@
 import { HiHatMachineMode } from "../toFutureSchema";
 
+export type EmptyE = Record<string, unknown>;
+
 export type TimelineEvent<E> = {
 	tick: number;
 	id: number;

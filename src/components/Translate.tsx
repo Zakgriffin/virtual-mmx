@@ -1,8 +1,6 @@
-import { Signal } from "../core/helpers/solid";
-
 interface TranslateGroupProps {
-	x?: Signal<number>;
-	y?: Signal<number>;
+	x?: () => number;
+	y?: () => number;
 	children: JSX.Element;
 }
 

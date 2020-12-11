@@ -1,19 +1,20 @@
 import { GroupLever } from "./GroupLever";
-import { range, entries } from "../../core/helpers/functions";
 import { Connector } from "./Connector";
 import { ChannelGroupTOFIX } from "../../toFutureSchema";
 import { useContext, For } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { entries, range } from "../../helpers/functions";
 
 export const MutingLevers = () => {
 	const app = useContext(AppContext);
 
-	const mute = app.performance.program.state.machine.mute;
-	const channelMute = app.performance.eventTimelines.machine.channelMute;
+	const mute = app.machineState.extra.mute;
+	const channelMute =
+		app.eventReactionHandler.stateChangeObservers.extra.channelMute;
 
 	const muteOf = (channelGroup: ChannelGroupTOFIX) => ({
-		timeline: channelMute[channelGroup],
-		current: () => mute[channelGroup]() ?? false,
+		observable: channelMute[channelGroup],
+		current: () => mute[channelGroup].v ?? false,
 	});
 
 	const levers = {
@@ -41,12 +42,12 @@ export const MutingLevers = () => {
 			<For each={range(0, 5)}>{(offset) => <Connector offset={offset} />}</For>
 
 			<For each={entries(levers)}>
-				{([char, { timeline, current }], offset) => (
+				{([char, { observable, current }], offset) => (
 					<GroupLever
 						offset={offset()}
 						char={char}
 						current={current}
-						timeline={timeline}
+						observable={observable}
 					/>
 				)}
 			</For>

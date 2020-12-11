@@ -1,10 +1,9 @@
-import { PerformanceAction } from "./other";
 import { MuteActionEditor } from "./MuteActionEditor";
 import { HiHatOpeningActionEditor } from "./HiHatOpeningActionEditor";
 import { BassCapoActionEditor } from "./BassCapoActionEditor";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
 import { PerformanceEditorContext } from "./PerformanceEditor";
+import { AppContext } from "../../app";
 
 export const ScrollableTimeline = () => {
 	const app = useContext(AppContext);
@@ -14,7 +13,7 @@ export const ScrollableTimeline = () => {
 	const tick = app.player.currentTick;
 
 	const actionEditor = () => {
-		const action = perf.selectedAction();
+		const action = perf.selectedAction.v;
 		if (!action) return;
 		if (action === "Muting Levers") {
 			return <MuteActionEditor />;
@@ -37,8 +36,8 @@ export const ScrollableTimeline = () => {
 			<rect width={2000} height={150} fill="#d9d9d9" /> {/*TODO not fixed*/}
 			{actionEditor}
 			<line
-				x1={tick()}
-				x2={tick()}
+				x1={tick.v}
+				x2={tick.v}
 				y2={height}
 				stroke="#6dcf43"
 				strokeWidth={2}

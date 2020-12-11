@@ -28,7 +28,7 @@ export class VibraphoneState {
 	> = mapArrayToObj(vibraphoneBars, (bar) => ({ bar, note: this.notes[bar] }));
 }
 
-interface VibraphoneBarState {
+export interface VibraphoneBarState {
 	bar: VibraphoneBarTOFIX;
 	note: Signal<Note>;
 }

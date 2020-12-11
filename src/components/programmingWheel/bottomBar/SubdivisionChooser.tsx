@@ -6,9 +6,9 @@ import sixteenthIcon from "./noteIcons/sixteenth.png";
 import tripletIcon from "./noteIcons/triplet.png";
 import wholeIcon from "./noteIcons/whole.png";
 import { useContext, For } from "solid-js";
-import { keys } from "../../../core/helpers/functions";
 import { NoteSubdivision } from "../programmingWheelDisplay";
 import { ProgrammingWheelContext } from "../ProgrammingWheel";
+import { keys } from "../../../helpers/functions";
 
 const icons: Record<NoteSubdivision, any> = {
 	eighth: eighthIcon,

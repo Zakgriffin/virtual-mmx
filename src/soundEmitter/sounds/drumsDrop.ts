@@ -1,5 +1,5 @@
 import { Sampler, context } from "tone";
-import { DrumsDropE, HiHatDropE } from "../../eventHandling/concrete";
+import { EmptyE, HiHatDropE } from "../../eventHandling/concrete";
 import { mapArrayToObj, values } from "../../helpers/functions";
 import { DrumsState } from "../../machineState/drums";
 import { drumTypes, DrumTypeTOFIX } from "../../toFutureSchema";
@@ -7,7 +7,7 @@ import { drumTypes, DrumTypeTOFIX } from "../../toFutureSchema";
 export class DrumsDropSound {
 	channels: Record<DrumTypeTOFIX, DrumsTypeDropSound>;
 
-	constructor(drumsState: DrumsState) {
+	constructor(_: DrumsState) {
 		this.channels = mapArrayToObj(drumTypes, (type) =>
 			type === "hihat" ? new DrumsTypeDropSound(type) : new HiHatDropSound(type)
 		);
@@ -23,7 +23,7 @@ class DrumsTypeDropSound {
 
 	constructor(private drum: DrumTypeTOFIX) {}
 
-	triggerStrike(_: DrumsDropE, time?: number) {
+	playSound(_: EmptyE, time?: number) {
 		if (this.drumSampler?.loaded) {
 			this.drumSampler.triggerAttack("A1", time ?? context.currentTime);
 		}
@@ -37,7 +37,7 @@ class DrumsTypeDropSound {
 }
 
 class HiHatDropSound extends DrumsTypeDropSound {
-	triggerStrike(event: HiHatDropE, time?: number) {
+	playSound(_: HiHatDropE, time?: number) {
 		if (this.drumSampler?.loaded) {
 			this.drumSampler.triggerAttack("A1", time ?? context.currentTime);
 		}

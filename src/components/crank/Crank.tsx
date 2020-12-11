@@ -1,13 +1,13 @@
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
 
 export const Crank = () => {
 	const app = useContext(AppContext);
 
 	// height of crank in its rotation
 	const y = () => {
-		const tick = app.player.currentTick();
-		const tpq = app.performance.program.metadata.tpq;
+		const tick = app.player.currentTick.v;
+		const tpq = app.program.metadata.tpq.v;
 		const rot = (tick / tpq) * 2 * Math.PI;
 
 		return 10 * Math.sin(rot);
@@ -50,7 +50,7 @@ export const Crank = () => {
 					textAnchor="middle"
 					style={{ "user-select": "none" }}
 				>
-					{app.performance.program.state.machine.bpm} BPM
+					{app.machineState.extra.bpm.v} BPM
 				</text>
 			</g>
 		</svg>

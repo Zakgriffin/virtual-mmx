@@ -1,6 +1,7 @@
 import { createMemo } from "solid-js";
 import { AppStore } from "../../app";
-import { VibraphoneDropTimeline } from "../../eventHandling/concrete";
+import { EmptyE } from "../../eventHandling/concrete";
+import { LoneTimeline } from "../../eventHandling/eventTimelines/variations/lone";
 import { mapArrayToObj, range, values } from "../../helpers/functions";
 import { s, Signal } from "../../helpers/solid";
 
@@ -35,11 +36,11 @@ export enum ChannelColor {
 /** A single VmmxInstrumentChannel with additional display related information. */
 export class DisplayChannel {
 	/** The vmmx instrument channel to display */
-	timeline: VibraphoneDropTimeline;
+	timeline: LoneTimeline<any>;
 	/** The color of this channel */
 	channelColor: ChannelColor;
 
-	constructor(timeline: VibraphoneDropTimeline, channelColor: ChannelColor) {
+	constructor(timeline: LoneTimeline<any>, channelColor: ChannelColor) {
 		this.timeline = timeline;
 		this.channelColor = channelColor;
 	}

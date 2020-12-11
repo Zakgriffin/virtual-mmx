@@ -1,10 +1,9 @@
-import { mapValue } from "../../core/helpers/functions";
 import { useContext } from "solid-js";
-import { Signal } from "../../core/helpers/solid";
+import { mapValue } from "../../helpers/functions";
 import { ProgrammingWheelContext } from "./ProgrammingWheel";
 
 interface PegProps {
-	pegTick: Signal<number>;
+	pegTick: number;
 	activeDivision: boolean;
 	spawnsEvent: boolean;
 	click?: () => void;
@@ -21,7 +20,7 @@ export const Peg = (props: PegProps) => {
 		return Math.min(20, Math.max(hNormal, 5));
 	}
 	function shift() {
-		const offset = wheel.pegOffsetFunction()(props.pegTick());
+		const offset = wheel.pegOffsetFunction()(props.pegTick);
 		const end = scroll.x.toPixel(1) - w();
 		return mapValue(offset, 0, 1, 0, end);
 	}
@@ -33,7 +32,7 @@ export const Peg = (props: PegProps) => {
 			fill={props.activeDivision ? "#ccc" : "#ccc9"}
 			x={shift()}
 			rx={3}
-			style={{cursor: 'pointer'}}
+			style={{ cursor: "pointer" }}
 			onClick={props.click}
 		/>
 	);

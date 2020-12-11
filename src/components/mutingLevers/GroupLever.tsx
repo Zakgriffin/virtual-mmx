@@ -1,21 +1,21 @@
-import { mapValue } from "../../core/helpers/functions";
-import { SpringPulse } from "../../core/helpers/springPulse";
-import { MuteEventTimeline, MuteE } from "../../core/eventTimelines/concrete";
-import { Getter } from "../../core/helpers/solid";
 import { useContext } from "solid-js";
-import { AppContext } from "../../stores/app";
+import { AppContext } from "../../app";
+import { MuteE } from "../../eventHandling/concrete";
+import { EventObservable } from "../../eventHandling/eventObserver";
+import { mapValue } from "../../helpers/functions";
+import { SpringPhysics } from "../../helpers/springPhysics";
 
 interface GroupLeverProps {
 	offset: number;
 	char: string;
-	timeline: MuteEventTimeline;
-	current: Getter<boolean>;
+	observable: EventObservable<MuteE>;
+	current: () => boolean;
 }
 
 export const GroupLever = (props: GroupLeverProps) => {
 	const app = useContext(AppContext);
 
-	const flipSpring = new SpringPulse();
+	const flipSpring = new SpringPhysics();
 	// config={{ tension: 700, friction: 50 }}
 	flipSpring.damping = 50;
 	flipSpring.stiffness = 500;
@@ -28,8 +28,9 @@ export const GroupLever = (props: GroupLeverProps) => {
 	};
 
 	function handleToggle() {
-		props.timeline.triggerEvent(
-			new MuteE({ mute: !props.current(), tick: app.player.currentTick() })
+		props.observable.triggerEvent(
+			{ mute: !props.current() },
+			app.player.currentTick.v
 		);
 		const amp = 30;
 		const y = props.current() ? -amp : amp;

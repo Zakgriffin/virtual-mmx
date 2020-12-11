@@ -1,5 +1,4 @@
 import { createMemo } from "solid-js";
-import { memo } from "solid-js/types/dom";
 import { findIndexEnhanced } from "../helpers/functions";
 import { s, Signal } from "../helpers/solid";
 
@@ -7,7 +6,7 @@ interface ScrollAxisStoreProps {
 	visibleLeast?: Signal<number>;
 	pixelsPerUnit?: Signal<number>;
 	visiblePixelRange?: Signal<number>;
-	total?: Signal<number>;
+	total?: () => number;
 	circular?: boolean;
 }
 
@@ -16,7 +15,7 @@ export class ScrollAxisStore {
 	visibleLeast: Signal<number>;
 	pixelsPerUnit: Signal<number>;
 	visiblePixelRange: Signal<number>;
-	total: Signal<number>;
+	total: () => number;
 	circular: boolean;
 
 	constructor(c?: ScrollAxisStoreProps) {
@@ -24,7 +23,7 @@ export class ScrollAxisStore {
 		this.visibleLeast = c?.visibleLeast ?? s(0);
 		this.pixelsPerUnit = c?.pixelsPerUnit ?? s(24);
 		this.visiblePixelRange = c?.visiblePixelRange ?? s(500);
-		this.total = c?.total ?? s(1500);
+		this.total = c?.total ?? (() => 1500);
 		this.circular = c?.circular ?? false;
 	}
 
@@ -40,7 +39,7 @@ export class ScrollAxisStore {
 		const oldPixelsPerUnit = this.pixelsPerUnit.v;
 		let newPixelsPerUnit = oldPixelsPerUnit * factor;
 
-		const minPixelsPerUnit = this.visiblePixelRange.v / this.total.v;
+		const minPixelsPerUnit = this.visiblePixelRange.v / this.total();
 		const maxPixelsPerUnit = 0.3;
 		if (newPixelsPerUnit < minPixelsPerUnit) {
 			newPixelsPerUnit = minPixelsPerUnit;
@@ -52,8 +51,8 @@ export class ScrollAxisStore {
 		const t = this.visibleLeast.v;
 		const r = oldPixelsPerUnit / newPixelsPerUnit;
 		let newLeast = m - r * (m - t); // mmm... algebra's hard
-		if (newLeast < 0) newLeast += this.total.v; // too far above
-		if (newLeast >= this.total.v) newLeast -= this.total.v; // too far below
+		if (newLeast < 0) newLeast += this.total(); // too far above
+		if (newLeast >= this.total()) newLeast -= this.total(); // too far below
 
 		this.pixelsPerUnit.set(newPixelsPerUnit);
 		this.visibleLeast.set(newLeast);
@@ -61,17 +60,17 @@ export class ScrollAxisStore {
 	scroll = (dy: number) => {
 		let newLeast = this.visibleLeast.v + this.fromPixel(dy);
 		if (this.circular) {
-			if (newLeast >= this.total.v) newLeast -= this.total.v;
-			if (newLeast < 0) newLeast += this.total.v;
+			if (newLeast >= this.total()) newLeast -= this.total();
+			if (newLeast < 0) newLeast += this.total();
 		} else {
-			if (newLeast >= this.total.v) newLeast = this.total.v;
+			if (newLeast >= this.total()) newLeast = this.total();
 			if (newLeast < 0) newLeast = 0;
 		}
 		this.visibleLeast.set(newLeast);
 	};
 
 	visibleArrayOf<T>(
-		data: Signal<T[]>,
+		data: () => T[],
 		getElementPos: (element: T) => number,
 		type?: "circular"
 	) {
@@ -80,12 +79,12 @@ export class ScrollAxisStore {
 
 		const least =
 			type === "circular"
-				? () => this.visibleLeast.v - this.total.v
+				? () => this.visibleLeast.v - this.total()
 				: () => this.visibleLeast.v;
 
 		const most = () => least() + this.visibleRange();
 
-		const dataInit = data.v;
+		const dataInit = data();
 		let startIndex = findIndexEnhanced(dataInit, (d) => v(d) >= least()) ?? 0;
 
 		let endIndex = Math.max(
@@ -107,7 +106,7 @@ export class ScrollAxisStore {
 		};
 
 		return createMemo(() => {
-			const d = data.v;
+			const d = data();
 
 			const start = least();
 			const end = most();

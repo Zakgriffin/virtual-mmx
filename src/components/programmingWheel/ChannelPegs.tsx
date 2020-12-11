@@ -1,16 +1,12 @@
 import { Peg } from "./Peg";
-import {
-	VibraphoneDropE,
-	DropEventTimeline,
-	DropE,
-} from "../../core/eventTimelines/concrete";
-import { For, useContext, createEffect } from "solid-js";
-import { Signal } from "../../core/helpers/solid";
+import { For, useContext } from "solid-js";
 import { ProgrammingWheelContext } from "./ProgrammingWheel";
 import { TranslateOnScroll } from "../Scroll";
+import { LoneTimeline } from "../../eventHandling/eventTimelines/variations/lone";
+import { EmptyE } from "../../eventHandling/concrete";
 
 interface ChannelPegsProps {
-	timeline: DropEventTimeline<VibraphoneDropE>;
+	timeline: LoneTimeline<EmptyE>;
 }
 
 export const ChannelPegs = (props: ChannelPegsProps) => {
@@ -21,13 +17,13 @@ export const ChannelPegs = (props: ChannelPegsProps) => {
 
 	return (
 		<>
-			<For each={props.timeline.events()}>
+			<For each={props.timeline.events}>
 				{(peg) => (
 					<MaybeRenderedPeg pegTick={peg.tick} timeline={props.timeline} />
 				)}
 			</For>
 			<TranslateOnScroll scroll={scroll} axis="y" by={scroll.y.total}>
-				<For each={props.timeline.events()}>
+				<For each={props.timeline.events}>
 					{(peg) => (
 						<MaybeRenderedPeg pegTick={peg.tick} timeline={props.timeline} />
 					)}
@@ -38,8 +34,8 @@ export const ChannelPegs = (props: ChannelPegsProps) => {
 };
 
 interface MaybeRenderedPegProps {
-	pegTick: Signal<number>;
-	timeline: DropEventTimeline<DropE>;
+	pegTick: number;
+	timeline: LoneTimeline<EmptyE>;
 }
 
 export const MaybeRenderedPeg = (props: MaybeRenderedPegProps) => {
@@ -47,18 +43,18 @@ export const MaybeRenderedPeg = (props: MaybeRenderedPegProps) => {
 
 	function removePeg() {
 		const t = props.timeline;
-		const event = t.events().find((e) => e.tick() === props.pegTick());
+		const event = t.events.find((e) => e.tick === props.pegTick);
 		if (!event) return;
 		const difs = t.getRemoveDifs(event);
 		if (!difs) return;
 		t.applyDifs(difs);
 	}
 	function activeDivision() {
-		return props.pegTick() % wheel.ticksPerNoteSubdivision() === 0;
+		return props.pegTick % wheel.ticksPerNoteSubdivision() === 0;
 	}
 
 	return (
-		<TranslateOnScroll scroll={scroll} axis="y" by={props.pegTick}>
+		<TranslateOnScroll scroll={scroll} axis="y" by={() => props.pegTick}>
 			<Peg
 				pegTick={props.pegTick}
 				activeDivision={activeDivision()}

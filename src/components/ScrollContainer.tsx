@@ -1,7 +1,7 @@
-import { For } from "solid-js";
+import { createMemo, For } from "solid-js";
+import { findIndexEnhanced } from "../helpers/functions";
+import { s, Signal } from "../helpers/solid";
 import { Line } from "./Line";
-import { Signal, signal, memo } from "../core/helpers/solid";
-import { findIndexEnhanced } from "../core/helpers/functions";
 
 interface ScrollContainerProps<T> {
 	start: Signal<number>;
@@ -13,31 +13,31 @@ interface ScrollContainerProps<T> {
 
 export function ScrollContainer<T>(props: ScrollContainerProps<T>) {
 	const v = props.getValue;
-	const s = signal(1);
+	const sc = s(1);
 	// setInterval(() => {
 	//   setS(s() + 0.1);
 	// }, 200);
-	const scale = memo(() => (n: number) => {
-		return n * s();
+	const scale = createMemo(() => (n: number) => {
+		return n * sc.v;
 	});
 
-	const dataInit = props.data();
+	const dataInit = props.data.v;
 	let startIndex =
-		findIndexEnhanced(dataInit, (d) => v(d) >= props.start()) ?? 0;
+		findIndexEnhanced(dataInit, (d) => v(d) >= props.start.v) ?? 0;
 
 	let endIndex = Math.max(
 		0,
-		(findIndexEnhanced(dataInit, (d) => v(d) > props.start() + props.span()) ??
+		(findIndexEnhanced(dataInit, (d) => v(d) > props.start.v + props.span.v) ??
 			dataInit.length) - 1
 	);
 	let lastStart = dataInit[startIndex];
 	let lastEnd = dataInit[endIndex];
 
-	const visibleData = memo(() => {
-		const data = props.data();
+	const visibleData = createMemo(() => {
+		const data = props.data.v;
 
-		const end = props.start() + props.span();
-		const start = props.start();
+		const end = props.start.v + props.span.v;
+		const start = props.start.v;
 
 		const backSearch = (bound: number, index: number) => {
 			return (
@@ -76,11 +76,11 @@ export function ScrollContainer<T>(props: ScrollContainerProps<T>) {
 	return (
 		<svg style={{ width: 500, height: 500 }}>
 			<rect width={500} height={500} fill="#0003" />
-			<Line color="green" at={scale()(props.start())} />
-			<Line color="purple" at={scale()(props.start() + props.span())} />
+			<Line color="green" at={scale()(props.start.v)} />
+			<Line color="purple" at={scale()(props.start.v + props.span.v)} />
 
 			<For each={visibleData()}>
-				{(e) => memo(() => props.children(scale()(v(e))))}
+				{(e) => createMemo(() => props.children(scale()(v(e))))}
 			</For>
 		</svg>
 	);

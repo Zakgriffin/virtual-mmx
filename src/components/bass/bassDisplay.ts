@@ -1,8 +1,8 @@
-import { mapValue } from "../../core/helpers/functions";
-import { signal } from "../../core/helpers/solid";
+import { mapValue } from "../../helpers/functions";
+import { s } from "../../helpers/solid";
 
 export class BassDisplayStore {
-	movingCapo = signal(false);
+	movingCapo = s(false);
 
 	viewWidth = 73;
 	viewHeight = 511;

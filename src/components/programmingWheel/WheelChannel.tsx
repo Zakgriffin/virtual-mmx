@@ -1,13 +1,12 @@
 import { ChannelPegs } from "./ChannelPegs";
 import { ChannelColor, DisplayChannel } from "./programmingWheelDisplay";
 import { useContext } from "solid-js";
-import { Signal } from "../../core/helpers/solid";
 import { TranslateOnScroll } from "../Scroll";
 import { ProgrammingWheelContext } from "./ProgrammingWheel";
 
 interface WheelChannelProps {
 	displayChannel: DisplayChannel;
-	channelNumber: Signal<number>;
+	channelNumber: () => number;
 	channelColor: ChannelColor;
 }
 

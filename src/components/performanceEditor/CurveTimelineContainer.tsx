@@ -1,28 +1,31 @@
-import { EventBase, CurveDif } from "../../core/eventTimelines/types/other";
-import { PolylineEventTimeline } from "../../core/eventTimelines/variations/polyline";
 import { EventCurve } from "./EventCurve";
-import { Curve } from "../../core/eventTimelines/types/curves";
-import { mapValue } from "../../core/helpers/functions";
-import { signal } from "../../core/helpers/solid";
-import { MouseTracker } from "../../core/helpers/MouseTracker";
 import { For, Show } from "solid-js";
+import {
+	Curve,
+	CurveDif,
+	CurveTimeline,
+} from "../../eventHandling/eventTimelines/variations/curve";
+import { mapValue } from "../../helpers/functions";
+import { MouseTracker } from "../../helpers/mouseTracker";
+import { s } from "../../helpers/solid";
+import { TimelineEvent } from "../../eventHandling/concrete";
 
-interface EventPolylineContainerProps<E extends EventBase> {
-	timeline: PolylineEventTimeline<E>;
-	shouldShow: (curve: Curve<E>) => boolean;
-	colorOf: (curve: Curve<E> | null) => string;
+interface CurveTimelineContainerProps<E> {
+	timeline: CurveTimeline<E>;
+	shouldShow: (curve: Curve<TimelineEvent<E>>) => boolean;
+	colorOf: (curve: Curve<TimelineEvent<E>> | null) => string;
 	value: (event: E) => number;
 	valToPixel: (value: number) => number;
 	newEventAt: (tick: number, value: number) => E;
 }
 
-export function EventPolylineContainer<E extends EventBase>(
-	props: EventPolylineContainerProps<E>
+export function CurveTimelineContainer<E>(
+	props: CurveTimelineContainerProps<E>
 ) {
-	const hovering = signal(false);
+	const hovering = s(false);
 	const mouse = new MouseTracker();
-	const dragging = signal(false);
-	const selectedEvent = signal<E | undefined>(undefined);
+	const dragging = s(false);
+	const selectedEvent = s<TimelineEvent<E> | undefined>(undefined);
 	const curves = props.timeline.curves;
 
 	document.addEventListener("click", () => {
@@ -39,32 +42,32 @@ export function EventPolylineContainer<E extends EventBase>(
 
 	function removeSelected() {
 		if (!selectedEvent) return;
-		const difs = props.timeline.getRemoveDifs(selectedEvent() as E);
+		const difs = props.timeline.getRemoveDifs(selectedEvent.v as E);
 		if (!difs) return;
 		props.timeline.applyDifs(difs);
-		selectedEvent(undefined);
+		selectedEvent.set(undefined);
 	}
 
 	function handleMouseEnter() {
-		hovering(true);
+		hovering.set(true);
 	}
 	function handleMouseLeave() {
-		hovering(false);
+		hovering.set(false);
 	}
 
-	function setSelected(event: E | undefined) {
-		selectedEvent(event);
+	function setSelected(event: TimelineEvent<E> | undefined) {
+		selectedEvent.set(event);
 	}
 
 	function setDragging(dragging: boolean) {
 		dragging = dragging;
 		if (dragging === true) {
-			selectedEvent(undefined);
+			selectedEvent.set(undefined);
 		}
 	}
 
 	const curvesFromSplit = () => {
-		const m = mouse.mousePos();
+		const m = mouse.mousePos.v;
 		if (!m || selectedEvent) return null;
 		const tick = m.x;
 		const pad = 20;
@@ -89,11 +92,11 @@ export function EventPolylineContainer<E extends EventBase>(
 				onMouseEnter={handleMouseEnter}
 				onMouseLeave={handleMouseLeave}
 			/>
-			<Show when={selectedEvent()}>
+			<Show when={selectedEvent.v}>
 				<circle
 					r={12}
-					cx={selectedEvent()?.tick()}
-					cy={props.valToPixel(props.value(selectedEvent()!))}
+					cx={selectedEvent.v?.tick}
+					cy={props.valToPixel(props.value(selectedEvent.v!))}
 					fill={props.colorOf(null) + "33"}
 				/>
 			</Show>
@@ -102,14 +105,14 @@ export function EventPolylineContainer<E extends EventBase>(
 				{(curve, ind) => {
 					const i = ind();
 					const start = {
-						left: i > 0 ? curves[i - 1].start.tick() : 0,
-						right: curve.end?.tick() ?? Infinity,
+						left: i > 0 ? curves[i - 1].start.tick : 0,
+						right: curve.end?.tick ?? Infinity,
 					};
 					const end = {
-						left: curve.start.tick(),
+						left: curve.start.tick,
 						right:
 							i < curves.length - 1
-								? curves[i + 1].start?.tick() ?? Infinity
+								? curves[i + 1].start?.tick ?? Infinity
 								: Infinity,
 					};
 
@@ -118,8 +121,8 @@ export function EventPolylineContainer<E extends EventBase>(
 							curve={curve}
 							bounds={{ start, end }}
 							setSelected={setSelected}
-							selectedEvent={selectedEvent()}
-							dragging={dragging()}
+							selectedEvent={selectedEvent.v}
+							dragging={dragging.v}
 							setDragging={setDragging}
 							shouldShow={props.shouldShow}
 							colorOf={props.colorOf}
@@ -133,8 +136,8 @@ export function EventPolylineContainer<E extends EventBase>(
 			{curvesFromSplit && mouse.mousePos && !dragging && (
 				<>
 					<circle
-						cx={mouse.mousePos()?.x}
-						cy={mouse.mousePos()?.y}
+						cx={mouse.mousePos.v?.x}
+						cy={mouse.mousePos.v?.y}
 						r={8}
 						fill={props.colorOf(null) + "33"}
 						pointerEvents="none"
@@ -151,18 +154,18 @@ export function EventPolylineContainer<E extends EventBase>(
 							return (
 								<g>
 									<line
-										x1={c.start.tick()}
+										x1={c.start.tick}
 										y1={y(c.start)}
-										x2={curveDif.at.tick()}
+										x2={curveDif.at.tick}
 										y2={yAt}
 										stroke={props.colorOf(null) + "33"}
 										strokeWidth={3}
 										pointerEvents="none"
 									/>
 									<line
-										x1={curveDif.at.tick()}
+										x1={curveDif.at.tick}
 										y1={yAt}
-										x2={c.end?.tick() ?? 9000} // TODO not fixed
+										x2={c.end?.tick ?? 9000} // TODO not fixed
 										y2={c.end ? y(c.end) : yAt}
 										stroke={props.colorOf(null) + "33"}
 										strokeWidth={3}

@@ -13,11 +13,11 @@ export class HiHatMachineSound {
 		this.mode = hiHatMachineState.mode;
 	}
 
-	triggerStrike = (_: HiHatMachineModeE, time?: number) => {
+	changeMode(_: HiHatMachineModeE, time?: number) {
 		if (this.hiHatMachineSample?.loaded) {
 			this.hiHatMachineSample.triggerAttack("A1", time ?? context.currentTime);
 		}
-	};
+	}
 
 	onToneLoad() {
 		const hiHatMachineSample = new Sampler({

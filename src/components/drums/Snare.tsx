@@ -1,19 +1,20 @@
 import { useContext } from "solid-js";
+import { AppContext } from "../../app";
 import { SpringPhysics } from "../../helpers/springPhysics";
 
 export const Snare = () => {
 	const app = useContext(AppContext);
 
 	const pulse = new SpringPhysics();
-	const snareTimelines = app.jointTimelines.drums.snare;
+	const snareObserver = app.eventReactionHandler.dropEventObservers.drums.snare;
 
-	snareTimelines.addJointEventListener(animateHit);
+	snareObserver.addEventListener(animateHit);
 
 	pulse.damping = 20;
 	pulse.stiffness = 300;
 
 	function handlePress() {
-		snareTimelines.performance.triggerEvent();
+		snareObserver.triggerEvent({});
 		animateHit();
 	}
 
