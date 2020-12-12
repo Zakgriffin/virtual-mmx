@@ -17,13 +17,13 @@ export const ChannelPegs = (props: ChannelPegsProps) => {
 
 	return (
 		<>
-			<For each={props.timeline.events}>
+			<For each={props.timeline.events.v}>
 				{(peg) => (
 					<MaybeRenderedPeg pegTick={peg.tick} timeline={props.timeline} />
 				)}
 			</For>
 			<TranslateOnScroll scroll={scroll} axis="y" by={scroll.y.total}>
-				<For each={props.timeline.events}>
+				<For each={props.timeline.events.v}>
 					{(peg) => (
 						<MaybeRenderedPeg pegTick={peg.tick} timeline={props.timeline} />
 					)}
@@ -43,7 +43,7 @@ export const MaybeRenderedPeg = (props: MaybeRenderedPegProps) => {
 
 	function removePeg() {
 		const t = props.timeline;
-		const event = t.events.find((e) => e.tick === props.pegTick);
+		const event = t.events.v.find((e) => e.tick === props.pegTick);
 		if (!event) return;
 		const difs = t.getRemoveDifs(event);
 		if (!difs) return;

@@ -7,9 +7,9 @@ export class SegmentTimeline<E> extends LoneTimeline<E> {
 	}
 
 	eventCanBePlaced(event: TimelineEvent<E>) {
-		for (let i = this.events.length; i >= 0; i--) {
-			if (this.events[i].tick < event.tick) {
-				return this.value(this.events[i]) == this.value(event);
+		for (let i = this.events.v.length; i >= 0; i--) {
+			if (this.events.v[i].tick < event.tick) {
+				return this.value(this.events.v[i]) == this.value(event);
 			}
 		}
 		return this.value(event);

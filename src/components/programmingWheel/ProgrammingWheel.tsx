@@ -25,11 +25,10 @@ export const ProgrammingWheel = () => {
 	const pixelsPerTick = s(0.2);
 	const mouse = new MouseTracker();
 	const wheel = new ProgrammingWheelDisplayStore(app);
+	const scrollPixelsPerUnitWidth = s(0);
 	const scroll = new ScrollContainerStore({
 		x: {
-			pixelsPerUnit: s(
-				wheel.visiblePixelWidth.v / wheel.displayChannels.length
-			),
+			pixelsPerUnit: scrollPixelsPerUnitWidth,
 			visiblePixelRange: wheel.visiblePixelWidth,
 		},
 		y: {
@@ -119,6 +118,9 @@ export const ProgrammingWheel = () => {
 		const box = mouseRef.getBoundingClientRect();
 		wheel.visiblePixelWidth.set(box.width);
 		wheel.visiblePixelHeight.set(box.height);
+		scrollPixelsPerUnitWidth.set(
+			wheel.visiblePixelWidth.v / wheel.displayChannels.length
+		);
 	}).observe(mouseRef);
 
 	return jsx;

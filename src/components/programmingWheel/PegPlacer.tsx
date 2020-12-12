@@ -1,6 +1,7 @@
 import { useContext, Show } from "solid-js";
 import { ProgrammingWheelContext } from "./ProgrammingWheel";
 import { TranslateOnScroll } from "../Scroll";
+import { timelineEvent } from "../../eventHandling/concrete";
 
 export const PegPlacer = () => {
 	const { wheel, scroll, mouse } = useContext(ProgrammingWheelContext);
@@ -24,14 +25,14 @@ export const PegPlacer = () => {
 		const t = timeline();
 		const mouseTick = mouseSnapped()?.mouseTick;
 		if (mouseTick === undefined || mouseTick < 0 || !t) return true;
-		return t.events.some((e) => e.tick === mouseTick);
+		return t.events.v.some((e) => e.tick === mouseTick);
 	};
 
 	function addPeg() {
 		const t = timeline();
 		const mouseTick = mouseSnapped()?.mouseTick;
 		if (mouseTick === undefined || mouseTick < 0 || !t) return;
-		const difs = t.getAddDifs({}, mouseTick);
+		const difs = t.getAddDifs(timelineEvent({}, mouseTick));
 		if (!difs) return;
 		t.applyDifs(difs);
 	}
